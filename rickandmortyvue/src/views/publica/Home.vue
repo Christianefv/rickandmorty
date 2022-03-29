@@ -47,19 +47,28 @@
 				Genderless
 			</div>
 		</div>
-		<div class="offset-2 col-8">
-			<div class="col row align-items-center">
-				<span class="text-fav">Mis favoritos:</span>
-				<button class="btn bg-secondary"><i class="fas fa-star"></i><i class="fa-solid fa-circle-star"></i></button>
+		<div class="offset-1 col-10">
+			<div class="col row align-items-center mt-2">
+				<span 	class="text-fav">Mis favoritos:</span>
+				<button class="btn d-flex justify-content-center align-items-center btn-favoritos"
+						@click="mostarFavoritos"
+						:class="[favoritos?'bg-white':'bg-secondary']"><i class="fas fa-star" :class="[favoritos?'text-warning':'text-white']" ></i></button>
 			</div>
 			<div class="row">
 				<div class="col-12 col-md-12 col-lg-6 col-xl-4" v-for="(personaje, index) in personajes" :key="index">
-					<pm-card-personaje :personaje="personaje">
+					<pm-card-personaje :personaje="personaje"
+						:modoFavoritos="favoritos"
+						@agregarFavorito="agregarFavorito">
 					</pm-card-personaje>
+				</div>
+				{{personajes.length}}
+				<div class="col row border d-flex justify-content-center align-items-center" v-if="personajes.length==0">
+					<span class="uhoh text-center">
+						Uh-oh!
+					</span>
 				</div>
 			</div>
 		</div>
-		
 	</div>
 </template>
 <script>
@@ -72,6 +81,8 @@ export default {
 			textoBuscar:'',
 			filtro:'All',
 			personajes:[],
+			favoritos:false,
+			idFavoritos:[]
 		}
 	},	
 	components: {
@@ -84,43 +95,88 @@ export default {
 		await this.All()
 	},
 	methods:{
+		agregarFavorito(id, favorito){
+			console.log(id)
+			if(favorito){
+				this.idFavoritos.push(id)
+			}
+			else{
+				let index = this.idFavoritos.indexOf(id);
+				if (index > -1) {
+					this.idFavoritos.splice(index, 1);
+				}
+			}
+			
+		},
 		async All(){
 			this.filtro="All"
+			this.loading=true
 			let r = await servicio.all()
 			this.personajes = r.results
-			console.log(r)
+			this.loading=false
 		},
 		async Unknown(){
 			this.filtro="Unknown"
+			this.loading=true
 			let r = await servicio.gender('Unknown')
 			this.personajes = r.results
+			this.loading=false
 		},
 		async Female(){
 			this.filtro="Female"
+			this.loading=true
 			let r = await servicio.gender('Female')
 			this.personajes = r.results
+			this.loading=false
 		},
 		async Male(){
 			this.filtro="Male"
+			this.loading=true
 			let r = await servicio.gender('Male')
 			this.personajes = r.results
+			this.loading=false
 		},
 		async Genderless(){
 			this.filtro="Genderless"
+			this.loading=true
 			let r = await servicio.gender('Genderless')
 			this.personajes = r.results
+			this.loading=false
 		},
-		async buscar(){			
+		async buscar(){
+			this.loading=true
 			let r = await servicio.searchbyname(this.textoBuscar)
 			this.personajes = r.results
 			this.textoBuscar = ''
+			this.loading=false
+		},
+		mostarFavoritos(){
+			this.favoritos = !this.favoritos
+			this.personajes = this.personajes.filter(item => this.idFavoritos.includes(item.id))			
 		}
 	}
 }
 </script>
 <style scoped>
+.uhoh{
+	width: 570px;
+	height: 43px;
+	left: 430px;
+	top: 733px;
+	font-family: 'Lato';
+	font-style: normal;
+	font-weight: 700;
+	font-size: 36px;
+	line-height: 43px;
+	display: flex;
+	align-items: center;
+	text-align: center;
+	color: #353535;
+}
 .btn-favoritos{
-	border-radius: 50%;
+	border-radius: 50% !important;
+	width: 30px;
+	height: 30px;
 }
 
 .text-fav{

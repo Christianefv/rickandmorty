@@ -2,24 +2,29 @@
     <div>
         <div class="font-12 col-personaje mt-4">
             <div class="d-flex" >
-                <div    :class="personaje.image=='' ? 'd-none':'d-flex align-items-center'">
+                <div  class="div-image"  :class="personaje.image=='' ? 'd-none':'d-flex align-items-center'">
                     <img    class="card-personaje d-none d-md-block" 
                             v-bind:src="personaje.image" 
                             alt="Responsive image"/>
+                    <button class="btn d-flex justify-content-center align-items-center btn-favoritos"
+						@click="mostarFavoritos"
+						:class="[favoritos||modoFavoritos?'bg-white':'bg-secondary']"><i class="fas fa-star" :class="[favoritos||modoFavoritos?'text-warning':'text-white']" ></i></button>
                 </div>
                 <div    class="ml-auto w-100 p-3">
                 <span   class="dot"
                         :class="personaje.status=='Alive'?'bg-success':'bg-danger'"></span>
                 <span   class="status ml-1">{{personaje.status}} - {{personaje.name}}</span>
-
+                
                 <div class="nombre w-100 text-left">
                     <a  class="cursor-pointer" @click="modalPersonaje(personaje.id)" role="button">
                         {{personaje.name}}</a>
                 </div>
                 <div class="w-100">
                     <span   class="subtitulo">Last known location:</span>
-                </div>                
-                <span   class="subtituloText">{{personaje.location.name}}</span>
+                </div>  
+                <div class="w-100">
+                    <span   class="subtituloText">{{personaje.location.name}}</span>
+                </div>
                 <div class="w-100">
                     <span   class="subtitulo">First seen in:</span>
                 </div>                
@@ -31,10 +36,11 @@
 </template>
 <script>
 export default {
-    props: ["personaje"],
+    props: ["personaje", "modoFavoritos"],
     data() {
         return {
-            indexLoc: this.index
+            indexLoc: this.index,
+            favoritos:false
         }
     },		
     mounted() {		    
@@ -42,11 +48,26 @@ export default {
     methods: {
       modalPersonaje(id){
           console.log(id)
-      }  
+      },
+      mostarFavoritos(){
+        this.favoritos = !this.favoritos
+        this.$emit("agregarFavorito", this.personaje.id, this.favoritos)
+     }
     }
 }
 </script>
 <style>
+.div-image{
+	position: relative;
+}
+.div-image .btn {
+    position: absolute;
+    top: 70%;
+    left: 75%;
+    border-radius: 50% !important;
+	width: 30px;
+	height: 30px;
+}
 .subtituloText{
     font-family: 'Montserrat';
     font-style: normal;
@@ -96,7 +117,7 @@ export default {
   display: inline-block;
 }
 .card-personaje {
-    width: 160px;
+    width: 150px;
     height: 140px;
 }
 .col-personaje {
