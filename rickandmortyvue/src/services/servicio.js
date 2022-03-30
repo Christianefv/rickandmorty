@@ -22,7 +22,7 @@ servicio.gender = function(gender) {
         })
 }
 
-servicio.searchbyname = function(name) {
+servicio.buscar = function(name) {
     return base.get('/character/?name='+name)
         .then(r => {
             return r.data;
@@ -31,4 +31,25 @@ servicio.searchbyname = function(name) {
             return e;
         })
 }
+
+servicio.episode = function(episode) {
+    return base.get('/episode/'+ episode)
+        .then(r => {
+            return r.data;
+        })
+        .catch(e => {
+            return e;
+        })
+}
+
+servicio.personajesInteresantes = function(personajes) {
+    return base.get('/character/'+ personajes)
+        .then(r => {
+            return r.data;
+        })
+        .catch(e => {
+            return e;
+        })
+}
+
 export default servicio;

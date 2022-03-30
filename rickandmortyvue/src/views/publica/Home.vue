@@ -72,7 +72,7 @@
 							¡Pareces perdido en tu viaje!
 					</div>
 					<div class="col-12 mt-4">
-						<button class="btn btn-eliminar" @click="All">
+						<button class="btn btn-eliminar justify-content-center align-items-center text-white" @click="All">
 								Eliminar filtros
 						</button>
 					</div>
@@ -80,12 +80,12 @@
 			</div>
 		</div>
 		<pm-detalle-personaje 
-			:personaje="personajeSeleccionado">
+			:personaje="personajeSeleccionado"
+			:episodios="episodios"
+			:idFavoritos="idFavoritos"
+			:personajesInteresantes="personajesInteresantes"
+			@agregarFavorito="agregarFavorito">
 		</pm-detalle-personaje>
-		<!-- Button trigger modal -->
-		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-		Launch demo modal
-		</button>
 	</div>
 </template>
 <script>
@@ -101,7 +101,9 @@ export default {
 			personajes:[],
 			favoritos:false,
 			idFavoritos:[],
-			personajeSeleccionado:{}
+			personajeSeleccionado:{},
+			episodios:[],
+			personajesInteresantes:[]
 		}
 	},
 	components: {
@@ -139,34 +141,34 @@ export default {
 		async Unknown(){
 			this.filtro="Unknown"
 			this.loading=true
-			let r = await servicio.gender('Unknown')
+			let r = await servicio.gender(this.filtro)
 			this.personajes = r.results
 			this.loading=false
 		},
 		async Female(){
 			this.filtro="Female"
 			this.loading=true
-			let r = await servicio.gender('Female')
+			let r = await servicio.gender(this.filtro)
 			this.personajes = r.results
 			this.loading=false
 		},
 		async Male(){
 			this.filtro="Male"
 			this.loading=true
-			let r = await servicio.gender('Male')
+			let r = await servicio.gender(this.filtro)
 			this.personajes = r.results
 			this.loading=false
 		},
 		async Genderless(){
 			this.filtro="Genderless"
 			this.loading=true
-			let r = await servicio.gender('Genderless')
+			let r = await servicio.gender(this.filtro)
 			this.personajes = r.results
 			this.loading=false
 		},
 		async buscar(){
 			this.loading=true
-			let r = await servicio.searchbyname(this.textoBuscar)
+			let r = await servicio.buscar(this.textoBuscar)
 			if(r){
 				this.personajes = r.results
 			}
@@ -202,19 +204,34 @@ export default {
 				
 			}
 		},
-		mostarModalPersonaje(personaje){
+		async mostarModalPersonaje(personaje){
 			this.personajeSeleccionado = personaje
-			
-
+			let episodiosConcat = ''
+			this.personajeSeleccionado.episode.forEach(function(episode) {
+				let arrSplit = episode.split('/')
+				episodiosConcat += arrSplit[arrSplit.length-1] + ','
+			})
+			this.consultarEpisodios(episodiosConcat)
 			this.$bvModal.show("modal-detalle")
+		},
+		async consultarEpisodios(episodiosConcat){
+			this.loading=true
+			let r = await servicio.episode(episodiosConcat)
+			this.episodios = r
+			await this.getPersonajesInteresantes()
+			this.loading=false
+		},
+		async getPersonajesInteresantes(){
+			this.loading=true
+			let r = await servicio.personajesInteresantes('1,2,3')
+			this.personajesInteresantes = r
+			this.loading=false
 		}
 	}
 }
 </script>
 <style scoped>
-.btn-eliminar{		
-	padding: 11px 20px;	
-	height: 44px;
+.btn-eliminar{
 	background: #11555F;
 	border-radius: 60px;
 }

@@ -5,7 +5,7 @@
 				<div class="row border justify-content-center align-items-center m-0">
 					<img class="imgtext" src="@/assets/rick-and-morty.png"/>
 					<h1 class="fuente-titulo">Bienvenido a Rick and Morty</h1>
-					<button class="btn btn-continuar" @click="Continuar">
+					<button class="btn btn-continuar text-white" @click="Continuar">
 							Continuar
 					</button>
 				</div>
@@ -44,7 +44,6 @@ export default {
 	flex-direction: row !important;
 	align-items: center;
 	padding: 11px 20px;
-	width: 120px;
 	height: 44px;
 	background: #11555F;
 	border-radius: 60px;
