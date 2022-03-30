@@ -2,7 +2,7 @@
     <div>
 		<pm-welcome background="portal-morty-smith-rick.png">
 			<template slot="contenido">
-				<div class="row justify-content-center align-items-center m-0">
+				<div class="row border justify-content-center align-items-center m-0">
 					<img class="imgtext" src="@/assets/rick-and-morty.png"/>
 					<h1 class="fuente-titulo">Bienvenido a Rick and Morty</h1>
 					<button class="btn btn-continuar" @click="Continuar">
@@ -39,33 +39,29 @@ export default {
 </script>
 <style scoped>
 .btn-continuar{
+	position: absolute;
 	display: flex;
 	flex-direction: row !important;
 	align-items: center;
 	padding: 11px 20px;
-
-	position: absolute;
 	width: 120px;
 	height: 44px;
-	top: 500px;
-
 	background: #11555F;
 	border-radius: 60px;
+	top: calc(90% - 120px/2 - 47.5px) !important;	
 }
 .fuente-titulo{
 	position: absolute;
 	width: 872px;
 	height: 53px;
 	left: calc(50% - 872px/2);
-	top: calc(50% - 53px/2 + 115.5px);
-
 	font-family: 'Montserrat';
 	font-style: normal;
 	font-weight: 400;
 	font-size: 36px;
 	line-height: 44px;
 	text-align: center;
-
+	top: calc(75% - 120px/2 - 47.5px) !important;	
 	color: #FFFFFF;
 }
 

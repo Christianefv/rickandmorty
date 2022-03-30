@@ -8,7 +8,9 @@
                             alt="Responsive image"/>
                     <button class="btn d-flex justify-content-center align-items-center btn-favoritos"
 						@click="mostarFavoritos"
-						:class="[favoritos||modoFavoritos?'bg-white':'bg-secondary']"><i class="fas fa-star" :class="[favoritos||modoFavoritos?'text-warning':'text-white']" ></i></button>
+						:class="[(esFavorito>0)||modoFavoritos?'bg-white':'bg-secondary']">
+                        <i class="fas fa-star" :class="[(esFavorito>0)||modoFavoritos?'text-warning':'text-white']" ></i>
+                    </button>
                 </div>
                 <div    class="ml-auto w-100 p-3">
                 <span   class="dot"
@@ -16,7 +18,7 @@
                 <span   class="status ml-1">{{personaje.status}} - {{personaje.name}}</span>
                 
                 <div class="nombre w-100 text-left">
-                    <a  class="cursor-pointer" @click="modalPersonaje(personaje.id)" role="button">
+                    <a  class="cursor-pointer" @click="modalPersonaje(personaje)" role="button">
                         {{personaje.name}}</a>
                 </div>
                 <div class="w-100">
@@ -28,7 +30,7 @@
                 <div class="w-100">
                     <span   class="subtitulo">First seen in:</span>
                 </div>                
-                <span   class="subtituloText">{{personaje.origin.name}}</span>                
+                    <span   class="subtituloText">{{personaje.origin.name}}</span>
                 </div>
             </div>
         </div>
@@ -36,22 +38,27 @@
 </template>
 <script>
 export default {
-    props: ["personaje", "modoFavoritos"],
+    props: ["personaje", "modoFavoritos", "idFavoritos"],
     data() {
         return {
             indexLoc: this.index,
             favoritos:false
         }
     },		
-    mounted() {		    
+    mounted() {
+    },
+    computed:{
+        esFavorito(){
+            return this.idFavoritos.filter(x => x == this.personaje.id)
+        }
     },
     methods: {
-      modalPersonaje(id){
-          console.log(id)
+      modalPersonaje(personaje){
+          this.$emit("mostarModalPersonaje", personaje)
       },
       mostarFavoritos(){
         this.favoritos = !this.favoritos
-        this.$emit("agregarFavorito", this.personaje.id, this.favoritos)
+        this.$emit("agregarFavorito", this.personaje, this.favoritos)
      }
     }
 }

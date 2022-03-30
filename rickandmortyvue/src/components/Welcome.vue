@@ -2,7 +2,7 @@
     <div class="header-wrapper">
         <div class="zoominheader fondoInicio">
             <div class="zoomoutheader">
-                <div class="container-fluid h-100 w-100 p-0">
+                <div class="container-fluid h-100 w-100 p-0 d-flex justify-content-center align-items-center ">
                     <slot name="contenido"></slot>
                 </div>
             </div>

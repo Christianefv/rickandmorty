@@ -20,10 +20,10 @@
 				</div>
 			</template>
 		</pm-welcome>
-		<div class="row text-center justify-content-center align-items-center text-nav">
+		<div class="col m-0 row text-center justify-content-center align-items-center text-nav">
 			<div 	class="btn col-2 d-flex justify-content-center align-items-center"
 					:class="{'isSelected col-2 h-100' : filtro == 'All'}"
-					@click="All">				
+					@click="All">
 				All
 			</div>
 			<div 	class="btn col-2 d-flex justify-content-center align-items-center"
@@ -48,7 +48,7 @@
 			</div>
 		</div>
 		<div class="offset-1 col-10">
-			<div class="col row align-items-center mt-2">
+			<div class="col row align-items-center mt-3">
 				<span 	class="text-fav">Mis favoritos:</span>
 				<button class="btn d-flex justify-content-center align-items-center btn-favoritos"
 						@click="mostarFavoritos"
@@ -58,23 +58,41 @@
 				<div class="col-12 col-md-12 col-lg-6 col-xl-4" v-for="(personaje, index) in personajes" :key="index">
 					<pm-card-personaje :personaje="personaje"
 						:modoFavoritos="favoritos"
-						@agregarFavorito="agregarFavorito">
+						:idFavoritos="idFavoritos"
+						@agregarFavorito="agregarFavorito"
+						@mostarModalPersonaje="mostarModalPersonaje">
 					</pm-card-personaje>
 				</div>
-				{{personajes.length}}
-				<div class="col row border d-flex justify-content-center align-items-center" v-if="personajes.length==0">
-					<span class="uhoh text-center">
-						Uh-oh!
-					</span>
+				<div 	class="col-12 text-center justify-content-center align-items-center" 
+						v-if="personajes==undefined ">
+					<div class="col-12 uhoh">
+							Uh-oh!
+					</div>
+					<div class="col-12 textperdido">
+							¡Pareces perdido en tu viaje!
+					</div>
+					<div class="col-12 mt-4">
+						<button class="btn btn-eliminar" @click="All">
+								Eliminar filtros
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
+		<pm-detalle-personaje 
+			:personaje="personajeSeleccionado">
+		</pm-detalle-personaje>
+		<!-- Button trigger modal -->
+		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+		Launch demo modal
+		</button>
 	</div>
 </template>
 <script>
 import servicio from "@/services/servicio"
 import PmWelcome from "@/components/Search"
 import PmCardPersonaje from "@/components/CardPersonaje"
+import PmDetallePersonaje from "@/components/DetallePersonaje"
 export default {
 	data() {
 		return {
@@ -82,12 +100,14 @@ export default {
 			filtro:'All',
 			personajes:[],
 			favoritos:false,
-			idFavoritos:[]
+			idFavoritos:[],
+			personajeSeleccionado:{}
 		}
-	},	
+	},
 	components: {
 		PmWelcome,
-		PmCardPersonaje
+		PmCardPersonaje,
+		PmDetallePersonaje
 	},
 	async mounted() {
 		document.querySelector(".fondoInicio").style.backgroundImage =
@@ -95,13 +115,14 @@ export default {
 		await this.All()
 	},
 	methods:{
-		agregarFavorito(id, favorito){
-			console.log(id)
+		agregarFavorito(personaje, favorito){
+			console.log(favorito)
+			personaje.favoritos = favorito
 			if(favorito){
-				this.idFavoritos.push(id)
+				this.idFavoritos.push(personaje.id)
 			}
 			else{
-				let index = this.idFavoritos.indexOf(id);
+				let index = this.idFavoritos.indexOf(personaje.id);
 				if (index > -1) {
 					this.idFavoritos.splice(index, 1);
 				}
@@ -146,31 +167,71 @@ export default {
 		async buscar(){
 			this.loading=true
 			let r = await servicio.searchbyname(this.textoBuscar)
-			this.personajes = r.results
+			if(r){
+				this.personajes = r.results
+			}
 			this.textoBuscar = ''
 			this.loading=false
 		},
 		mostarFavoritos(){
 			this.favoritos = !this.favoritos
-			this.personajes = this.personajes.filter(item => this.idFavoritos.includes(item.id))			
+			if(this.favoritos){
+				this.personajes = this.personajes.filter(item => this.idFavoritos.includes(item.id))
+			}
+			else{
+				switch (this.filtro) {
+				case "All":
+					this.All()
+					break;
+				case "Unknown":
+					this.Unknown()
+					break;
+				case "Female":
+					this.Female()
+					break;
+				case "Male":
+					this.Male()
+					break;
+				case "Genderless":
+					this.Genderless()
+					break;
+				default:
+					this.All()
+					break;
+				}
+				
+			}
+		},
+		mostarModalPersonaje(personaje){
+			this.personajeSeleccionado = personaje
+			
+
+			this.$bvModal.show("modal-detalle")
 		}
 	}
 }
 </script>
 <style scoped>
-.uhoh{
-	width: 570px;
-	height: 43px;
-	left: 430px;
-	top: 733px;
+.btn-eliminar{		
+	padding: 11px 20px;	
+	height: 44px;
+	background: #11555F;
+	border-radius: 60px;
+}
+.textperdido{
+	font-family: 'Lato';
+	font-style: normal;
+	font-weight: 500;
+	font-size: 20px;	
+	text-align: center;
+	color: #5E5E5E;
+}
+.uhoh{	
 	font-family: 'Lato';
 	font-style: normal;
 	font-weight: 700;
 	font-size: 36px;
 	line-height: 43px;
-	display: flex;
-	align-items: center;
-	text-align: center;
 	color: #353535;
 }
 .btn-favoritos{
@@ -200,9 +261,7 @@ export default {
 	font-style: normal;
 	font-weight: 400;
 	font-size: 18px;
-	line-height: 22px;
-	text-align: center;
-	color: #000000;
+	line-height: 22px;	
 }
 .search{
     position: absolute;
